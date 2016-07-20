@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--Import Google Icon Font-->
+  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<header>
+  <nav>
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="index.html" class="brand-logo">Panaderia Serran</a>
+        <ul style="transform: translateX(-100%);" class="right side-nav" id="nav-mobile">
+          <li class="hide-on-small-only"><a href="parallax.html"><i class="mdi-navigation-arrow-back"></i></a></li>
+        </ul>
+        <a class="button-collapse" href="#" data-activates="nav-mobile"><i class="mdi-navigation-menu"></i></a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<body>
+	<main>
+		<div class="section white">
+			<div class="row container">
+				<h2 class="header">Apps</h2>
+				<div class="input-field col s6">
+					<input id="plugin_name" type="text" class="validate">
+					<label for="plugin_name">App name</label>
+				</div>
+			</div>
+			<div class="row container">
+				<ul class="collection">
+					<li class="collection-item avatar">
+						<i class="material-icons circle">motorcycle</i>
+						<span class="title">Delivery App</span>
+						<p>	This app allows you to easily manage any request that your business may receive.<br>
+							With this app any client that may buy in your business can contact you, make the order and<br>
+							submit his request. You'll receive the request through your dashboard.<br>
+							Author: <a href="www.somepage.com">Alex Weiber</a><br>
+						</p>
+						<blockquote>
+						This App will only be visible to users with roles: <a href="#">Admin</a>, <a href="#">Manager</a> or <a href="#">Employee</a>
+						</blockquote>
+						<a href="#!" class="secondary-content">
+							<i class="material-icons">settings</i>
+							<i class="material-icons">ic_get_app</i>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<!--Scripts-->
+		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script src="js/materialize.js"></script>
+		<script>
+		(function($){
+		  $(function(){
+			// Plugin initialization
+			$('.parallax').parallax();
+		  }); // end of document ready
+		})(jQuery); // end of jQuery name space
+		</script>
+	</main>
+
+</body>
+</html>

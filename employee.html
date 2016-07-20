@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--Import Google Icon Font-->
+  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <style  type="text/css">
+	.kimboo-sdk-templates {
+		display: none;
+	}
+  </style>
+</head>
+
+<body>
+	<main>
+		<div class="kimboo-sdk-templates">
+			<li id="employee_list_item_template" class="collection-item avatar">
+				<div id="employee_list_item-<%id%>">
+					<img src="<%avatar_url%>" alt="" class="circle">
+					<span class="title"><%name%> <%last_name%></span>
+					<p>
+					<span><i class="material-icons" style="color: gray;">attach_money</i> Salary: <%salary_amount%> <%salary_coin_type%></span><br>
+					<span><i class="material-icons" style="color: gray;">location_on</i> Address: <%address_formatted%></span><br>
+					<span><i class="material-icons" style="color: gray;">phone</i> Phone: <%phone%></span><br>
+					<span><i class="material-icons" style="color: gray;">share</i> Facebook: <%facebook%></span><br>
+					<span><i class="material-icons" style="color: gray;">perm_contact_calendar</i> Birth date: <%birth_date%></span><br>
+					</p>
+					<%if (kimbooSdk.currentUser.isAdmin() || kimbooSdk.currentUser.isManager()) {%>
+						<a href="#!" class="secondary-content">
+							<i class="material-icons modal-trigger" href="#delete_modal" onclick='loadDeleteEmployeeModal(<%id%>);'>delete</i>
+							<i class="material-icons modal-trigger" href="#edit_modal" onclick='loadEditEmployeeModal(<%id%>);'>edit</i>
+						</a>
+					<%}%>
+				</div>
+			</li>
+			
+			
+		</div>
+			
+		<div class="section white">
+			
+		
+			<div class="row container">
+				<h2 class="header">Employee</h2>
+				<div class="input-field col s6">
+					<input id="employee_search_str" type="text" class="validate">
+					<label for="employee_search_str">Search employee</label>
+				</div>
+			</div>
+			<div class="row container">
+				<a class="waves-effect waves-light btn green"><i class="material-icons left">add</i>Add Employee</a>
+			</div>
+			<div class="row container">
+				<ul id="employee_list_container" class="collection">
+					<!-- The list of employees is displayed here -->
+				</ul>
+			</div>
+		</div>
+		
+			<!-- Delete Modal Structure -->
+			<div id="employee_delete_modal_template" class="modal">
+				<div class="modal-content">
+				  <h4>Are you sure?</h4>
+				  <input type="hidden" id="employee_delete_modal_template_id"/>
+				  <p>You will delete permanentely the record of the employee of name <span id="employee_delete_modal_template_name">...?</span></p>
+				</div>
+				<div class="modal-footer">
+				  <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+				  <a href="#!" onclick="deleteEmployee()" class=" modal-action modal-close waves-effect waves-green btn-flat">Delete</a>
+				</div>
+			</div>
+			<!-- Edit Modal Structure -->
+			<div id="employee_edit_modal" class="modal modal-fixed-footer">
+			<div class="modal-content">
+					<h4>Edit</h4>
+					<form id="employee_edit_modal_form">
+					<input type="hidden" name="id" id="id" />
+					<div class="row">
+						<!-- Image Avatar -->
+					    <img id="employee_edit_modal_avatar" src="images/test_avatar.jpg" alt="" class="circle col s4">
+						<!-- First Name and Last Name Inputs -->
+						<div class="col s8" >
+							<div class="input-field col s6">
+								<input id="employee_edit_modal_first_name" type="text">
+								<label for="employee_edit_modal_first_name" class="active">First Name</label>
+							</div>
+							<div class="input-field col s6">
+								<input id="employee_edit_modal_last_name" type="text">
+								<label for="employee_edit_modal_last_name" class="active">Last Name</label>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col s12">
+						  <div class="row">
+							<div class="input-field col s12">
+								<label for="employee_edit_modal_birthdate" class="active">Birthdate</label>
+								<input id="employee_edit_modal_birthdate" type="date" class="datepicker">
+							</div>
+						  </div>
+						</div>
+					</div>					
+					<div class="row">
+						<div class="input-field col s12">
+							<i class="material-icons prefix">supervisor_account</i>
+							<select id="employee_edit_modal_role" >
+								<option value="" disabled selected>Choose a role</option>
+								<option value="EMPLOYEE">Employee</option>
+								<option value="MANAGER">Manager</option>
+								<option value="ADMIN">Admin</option>
+							</select>
+							<label>Role</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s12">
+							<i class="material-icons prefix">location_on</i>
+							<input placeholder="Liberty Av. 3456, New York, New York" id="employee_edit_modal_address" type="text" class="validate">
+							<label for="employee_edit_modal_address" class="active">Address</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s12">
+							<i class="material-icons prefix">share</i>
+							<input placeholder="http://www.facebook.com/someFacebook" id="employee_edit_modal_facebook" type="text" class="validate">
+							<label for="employee_edit_modal_facebook" class="active">Facebook</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s12">
+							<i class="material-icons prefix">phone</i>
+							<input placeholder="+(COUNTRY CODE) (AREA CODE) (NUMBER)" id="employee_edit_modal_phone_number" type="text" class="validate">
+							<label for="employee_edit_modal_phone_number" class="active">Phone Number</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="input-field col s12">
+							<i class="material-icons prefix">attach_money</i>
+							<input placeholder="3.500,00" id="employee_edit_modal_salary" type="text" class="validate">
+							<label id="employee_edit_modal_salary_label" for="employee_edit_modal_salary" class="active">Month Salary</label>
+						</div>
+					</div>
+					</form>
+			</div>
+			<div class="modal-footer">
+			  <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancel</a>
+			  <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat" onclick="editEmployee();">Edit</a>
+			</div>
+		</div>
+		
+		<!--Scripts-->
+		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script src="js/materialize.js"></script>
+		<script src="js/kimboosdk.js"></script>
+		<script>
+			//Calling this method with the PLUGIN_DEV_ID intializes the connection with this plugin DB
+			//Allowing you to query your own plugin DB
+			var kimbooSdk = new KimbooSDK("12");
+				
+			function formatDate(date) {
+				var monthNames = [
+					"January", "February", "March",
+					"April", "May", "June", "July",
+					"August", "September", "October",
+					"November", "December"
+				];
+				var day = date.getDate();
+				var monthIndex = date.getMonth();
+				var year = date.getFullYear();
+				return day + ' ' + monthNames[monthIndex] + ', ' + year;
+			}
+			
+			function deleteEmployee() {
+				var employeeId = $("#employee_delete_modal_template_id").val();
+				kimbooSdk.delete(employeeId).field("id")
+					.finished(function(deletedUserJson) {
+						$("#employee_list_item-" + deletedUserJson.id).parent().remove();
+					})
+					.execute();
+			}
+		
+			function editEmployee() {
+				var employeeId = $("#id").val();
+				var jsonPayload = JSON.stringify($("#edit_employee_modal_form").serializeArray());
+				kimbooSdk.update(employeeId).field("id")
+					.payload(jsonPayload)
+					.finished(function(jsonResult) {
+						
+					})
+					.execute();
+			}
+		
+			function loadDeleteEmployeeModal(employeeId) {
+				kimbooSdk.search(employeeId).field("id")
+					.finished(function(jsonResult) {
+						$("#employee_delete_modal_template_id").val(jsonResult.id);
+						$("#employee_delete_modal_template_name").text(jsonResult.name + " " + jsonResult.last_name);
+						$("#employee_delete_modal_template").openModal();
+					})
+					.execute();
+			} 
+		
+			function loadEditEmployeeModal(employeeId) {
+				kimbooSdk.search(employeeId).field("id")
+					.finished(function(jsonResult) {
+						$("#employee_edit_modal_id").val(jsonResult.id);
+						$("#employee_edit_modal_salary").val(jsonResult.salary_amount);
+						$("#employee_edit_modal_salary_label").text("Month Salary (" + jsonResult.salary_coin_type + ")");
+						$("#employee_edit_modal_first_name").val(jsonResult.name);
+						$("#employee_edit_modal_last_name").val(jsonResult.last_name);
+						$("#employee_edit_modal_address").val(jsonResult.address_formatted);
+						$("#employee_edit_modal_phone_number").val(jsonResult.phone);
+						$("#employee_edit_modal_edit_employee_role").val(jsonResult.role);
+						$("#employee_edit_modal_facebook").val(jsonResult.facebook);
+						var birthdate = new Date(jsonResult.birth_date)
+						$("#employee_edit_modal_avatar").attr("src", jsonResult.avatar_url);
+						$("#employee_edit_modal_birthdate").val(formatDate(birthdate));
+						$("#employee_edit_modal").openModal();
+					})
+					.execute();
+			} 
+			
+			//When the user finishes writing into the input we trigger a search...
+			var timerid;    
+			$("#employee_search_str").on("input",function(e){
+				var value = $(this).val();
+				if ($(this).data("lastval")!= value) {
+					$(this).data("lastval",value);
+					clearTimeout(timerid);
+					timerid = setTimeout(function() {
+						kimbooSdk.search(value)
+							.field("search_tags")
+							.template("#employee_list_item_template")
+							.render("#employee_list_container");
+					},1000); //Wait 1 sec after the user finished writing, so we fire the callback only if the user finished typing.
+
+				};
+			});
+		
+		
+		(function($){
+		  $(function(){
+			// Selector initialization
+			$('select').material_select();
+			// DatePicker initialization
+			$('.datepicker').pickadate({
+				selectMonths: true, // Creates a dropdown to control month
+				selectYears: 15 // Creates a dropdown of 15 years to control year
+			});
+			// Plugin initialization
+			$('.parallax').parallax();
+			// The "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+			$('.modal-trigger').leanModal();
+		  }); // end of document ready
+		})(jQuery); // end of jQuery name space
+		</script>
+	</main>
+
+</body>
+</html>h	

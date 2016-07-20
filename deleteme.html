@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--Import Google Icon Font-->
+  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!--Import materialize.css-->
+  <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+  <!--Import codemirror.css-->
+  <link type="text/css" rel="stylesheet" href="css/codemirror.css"/>
+  <link type="text/css" rel="stylesheet" href="css/fullscreen.css"/>
+  <!--Let browser know website is optimized for mobile-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+  .icon-padding { vertical-align: middle; padding-bottom: 5px; margin-right: 5px; }
+  .kimboo-sdk-templates { display: none; }
+  </style>
+</head>
+<header>
+  <nav>
+    <div class="nav-wrapper">
+      <a href="#!" class="brand-logo"> Kimboo</a>
+      <ul class="right hide-on-med-and-down">
+		
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<body>
+	<main>
+		<div class="section white">
+			<div class="row">
+			<!-- Tabs -->
+			<div class="col s12">
+			  <ul class="tabs">
+				<li class="tab col s3"><a class="active" href="#code_editor_div"><i class="material-icons icon-padding">chrome_reader_mode</i>Code Editor</a></li>
+				<li class="tab col s3"><a href="#html_editor_div"><i class="material-icons icon-padding">create</i>HTML Editor</a></li>
+				<li class="tab col s3"><a href="#database_editor_div"><i class="material-icons icon-padding">cloud</i>Database Editor</a></li>
+				<li class="tab col s3"><a href="#test_plugin_div"><i class="material-icons icon-padding">build</i>Test Plugin</a></li>
+			  </ul>
+			</div>
+			<!-- End of Tabs -->
+			<!-- Code Editor -->
+			<div id="code_editor_div" class="col s12">
+			<textarea id="javascript_code_textarea">
+
+			</textarea>	
+			</div>
+			<!-- End of Code Editor -->
+			<!-- HTML Editor -->
+			<div id="html_editor_div" class="col s12">
+				<textarea id="html_editor_textarea"></textarea>
+			</div>
+			<!-- End of HTML Editor -->
+			<!-- Database Editor -->
+			<div id="database_editor_div" class="col s12">
+				<div class="row">
+					<h2 class="header">Database</h2>
+					<div class="input-field col s4">
+						<input id="database_field_name" type="text" class="validate">
+						<label for="database_field_name">New database field</label>
+					</div>
+					<div class="input-field col s4">
+						<i class="material-icons prefix">supervisor_account</i>
+						<select id="employee_edit_modal_role" >
+							<option value="" disabled selected>Choose the field's type</option>
+							<option value="int">Int</option>
+							<option value="bool">Boolean</option>
+							<option value="double">Double</option>
+							<option value="float">Float</option>
+							<option value="string">String</option>
+							<option value="char">Char</option>
+							<option value="datetime">Date</option>
+						</select>
+						<label>Data type</label>
+					</div>
+				</div>
+				<div class="row">
+					<a class="waves-effect waves-light btn green"><i class="material-icons left">add</i>Add database field</a>
+				</div>
+				<table class="responsive-table bordered">
+				<thead>
+					<tr id="table_headers_container">
+						<!-- Here goes the table headers retrieved from /plugin/{id}/datascheme -->
+					</tr>
+				</thead>
+
+				<tbody id="table_content_container">
+					<!-- Here goes the table contents retrieved from /plugin/{id}/data -->
+				</tbody>
+			</table>
+			</div>
+			<!-- End of Database Editor -->
+			<!-- Test Plugin -->
+			<div id="test_plugin_div" class="col s12">
+				<div id="test_plugin_html_div"></div>
+				<div id="test_plugin_code_div"></div>
+			</div>
+			<!-- End Of Test Plugin -->
+		  </div>
+		</div>
+		<!--Scripts-->
+		<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script src="js/materialize.js"></script>
+		<script src="js/kimboosdk.js"></script>
+		<script src="js/codemirror.js"></script>
+		<script src="js/fullscreen.js"></script>
+		<script src="js/javascript.js"></script>
+		<script src="js/htmlmixed.js"></script>
+		<script src="js/active-line.js"></script>
+		<script src="js/matchbrackets.js"></script>		
+		<script src="js/selection-pointer.js"></script>
+		<script src="js/xml.js"></script>
+		<script src="js/css.js"></script>
+		<script src="js/vbscript.js"></script>
+		<script>
+		(function($){
+		  $(function(){
+			// CodeMirror initialization
+			// Code Editor initialization
+			var codeEditor = CodeMirror.fromTextArea(document.getElementById("javascript_code_textarea"), {
+				styleActiveLine: true,
+				matchBrackets: true,
+				mode: "javascript",
+				lineNumbers: true,
+				lineWrapping: true,
+				extraKeys: {
+					"Ctrl-Q": function(cm) { 
+						cm.foldCode(cm.getCursor()); 
+					},
+					"F11": function(cm) {
+					  cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+					},
+					"Esc": function(cm) {
+					  if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+					}
+				},
+				foldGutter: true,
+				gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+			});
+			// HTML Editor initialization
+			// Define an extended mixed-mode that understands vbscript and
+			// leaves mustache/handlebars embedded templates in html mode
+			var mixedMode = {
+				name: "htmlmixed",
+				scriptTypes: [{matches: /\/x-handlebars-template|\/x-mustache/i,
+							   mode: null},
+							  {matches: /(text|application)\/(x-)?vb(a|script)/i,
+							   mode: "vbscript"}]
+			 };
+			
+			var htmlEditor = CodeMirror.fromTextArea(document.getElementById("html_editor_textarea"), {
+				styleActiveLine: true,
+				matchBrackets: true,
+				mode: mixedMode,
+				selectionPointer: true,
+				lineNumbers: true,
+				lineWrapping: true,
+				extraKeys: {
+					"Ctrl-Q": function(cm) { 
+						cm.foldCode(cm.getCursor()); 
+					},
+					"F11": function(cm) {
+					  cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+					},
+					"Esc": function(cm) {
+					  if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+					}
+				},
+				foldGutter: true,
+				gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
+			});
+			$.get("http://private-2c058-kimboo.apiary-mock.com/plugin/12/html", function (htmlTemplate) {
+				htmlEditor.setValue(htmlTemplate);
+			});
+			$.get("http://private-2c058-kimboo.apiary-mock.com/plugin/12/code", function (codeTemplate) {
+				codeEditor.setValue(codeTemplate);
+			});
+			$.get("http://private-2c058-kimboo.apiary-mock.com/plugin/12/datascheme", function (dataSchemeCollection) {
+				var rowHeaderTemplate = '<th data-field="<%db_field_name%>"><%db_field_name%> <i class="material-icons icon-padding">delete</i></th>';
+				for (var index = 0; index < dataSchemeCollection.length; index++) {
+					$("#table_headers_container").append(KimbooTemplateEngine(rowHeaderTemplate, dataSchemeCollection[index]));
+				}
+			});
+			$.get("http://private-2c058-kimboo.apiary-mock.com/plugin/12/data", function (dataRecords) {
+				for (var dataIndex = 0; dataIndex < dataRecords.length; dataIndex++) {
+					var rowTemplate = '<tr>';
+					
+					var singleDataRecord = dataRecords[dataIndex];
+					var singleDataRecordKeys = Object.keys(singleDataRecord);
+					for (var singleDataKeyIndex = 0; singleDataKeyIndex < singleDataRecordKeys.length; singleDataKeyIndex++) {
+						var singleDataRecordKey = singleDataRecordKeys[singleDataKeyIndex];
+						rowTemplate += '<td>' + singleDataRecord[singleDataRecordKey] + '</td>';
+					}
+					
+					rowTemplate += '</tr>';
+					$("#table_content_container").append(rowTemplate);
+				}
+			
+				
+			});
+			
+			codeEditor.on("changes", function(codeMirror, changesBatch){
+				$("#test_plugin_code_div").empty();
+				$("#test_plugin_code_div").append("<script>" + codeEditor.getValue() + "<\/script>");
+				$("#test_plugin_html_div").empty();
+				$("#test_plugin_html_div").append(htmlEditor.getValue());
+			});
+			htmlEditor.on("changes", function(codeMirror, changesBatch){
+				$("#test_plugin_code_div").empty();
+				$("#test_plugin_code_div").append("<script>" + codeEditor.getValue() + "<\/script>");
+				$("#test_plugin_html_div").empty();
+				$("#test_plugin_html_div").append(htmlEditor.getValue());
+			});
+			
+			//MaterializeCss Initialization
+			$('select').material_select();
+			
+		  }); // end of document ready
+		})(jQuery); // end of jQuery name space
+		</script>
+	</main>
+
+</body>
+</html>
